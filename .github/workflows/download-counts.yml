@@ -1,0 +1,52 @@
+name: Refresh download counts
+
+on:
+  schedule:
+    - cron: '30 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Total the release downloads
+        id: counts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $downloads = gh api repos/EllinaeXIV/HornWatch/releases --paginate `
+            --jq '.[].assets[] | select(.name | endswith(".zip")) | .download_count'
+
+          $total = [int](($downloads | Measure-Object -Sum).Sum)
+
+          "Hornwatch has been downloaded $total times across every release."
+          "total=$total" >> $env:GITHUB_OUTPUT
+
+      - name: Write it into pluginmaster.json
+        shell: pwsh
+        run: |
+          $path = 'pluginmaster.json'
+          $manifest = @(Get-Content $path -Raw | ConvertFrom-Json)
+
+          $entry = $manifest | Where-Object { $_.InternalName -eq 'Hornwatch' }
+          if (-not $entry) { throw "pluginmaster.json has no Hornwatch entry." }
+
+          $entry | Add-Member -NotePropertyName DownloadCount `
+            -NotePropertyValue ([int]'${{ steps.counts.outputs.total }}') -Force
+
+          $manifest | ConvertTo-Json -Depth 10 -AsArray | Set-Content $path -Encoding utf8
+
+      - name: Commit when it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pluginmaster.json
+          git diff --cached --quiet || git commit -m "Refresh Hornwatch download count"
+          git push origin HEAD:main
