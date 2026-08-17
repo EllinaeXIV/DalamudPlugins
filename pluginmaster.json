@@ -3,7 +3,7 @@
     "Author": "Ellinae",
     "Name": "Hornwatch",
     "InternalName": "Hornwatch",
-    "AssemblyVersion": "0.1.5.2",
+    "AssemblyVersion": "0.1.5.3",
     "Punchline": "Tracking Occult Crescent.",
     "Description": "Tracking Occult Crescent. Use /hornwatch to open the plugin. Settings are available from the gear icon in the Plugin Installer.",
     "ApplicableVersion": "any",
@@ -18,6 +18,7 @@
     "DownloadLinkUpdate": "https://github.com/EllinaeXIV/HornWatch/releases/latest/download/latest.zip",
     "DownloadLinkTesting": "https://github.com/EllinaeXIV/HornWatch/releases/latest/download/latest.zip",
     "DownloadCount": 32,
+    "LastUpdate": 1786996294,
     "Changelog": "Treasure markers can now show on the minimap.\nThe window can open by itself when you enter the zone, and Escape can be stopped from closing it.\nThe theme that followed the game never worked and has been removed; the default is now Modern."
   }
 ]
